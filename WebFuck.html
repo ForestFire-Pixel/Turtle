@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebFuck Discord Webhook - Version 2.0.4</title>
+<style>
+@keyframes fadeInScale{0%{opacity:0;transform:scale(0.9)}100%{opacity:1;transform:scale(1)}}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,123,255,0.7)}70%{box-shadow:0 0 20px 15px rgba(0,123,255,0)}100%{box-shadow:0 0 0 0 rgba(0,123,255,0)}}body{font-family:'Arial',sans-serif;background-color:#333;margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;color:#fff;overflow:hidden}.container{background:linear-gradient(145deg,#555,#777);border-radius:15px;box-shadow:0 8px 16px rgba(0,0,0,0.2);padding:25px;width:500px;max-width:90%;text-align:center;animation:fadeInScale 0.8s ease-in-out}.container img{width:300px;height:auto;margin-bottom:10px;animation:pulse 2s infinite alternate ease-in-out}.container h1{font-size:2rem;color:#007bff;margin-bottom:20px;position:relative;animation:pulse 2s infinite alternate ease-in-out}h1::after{content:'- Version 2.0.4';color:#f39c12;font-size:1rem;display:block;margin-top:5px}label{display:block;font-weight:bold;margin-bottom:8px;color:#f39c12;font-size:1rem;animation:fadeInScale 1.2s ease}input[type="text"],input[type="number"]{width:100%;padding:12px;border:1px solid #777;border-radius:6px;font-size:1rem;color:#fff;background-color:#444;margin-bottom:10px;animation:fadeInScale 1s ease-in-out}input[type="text"]:focus,input[type="number"]:focus{outline:none;border-color:#007bff;background-color:#555}button{background-color:#f39c12;color:#fff;border:none;padding:12px 20px;border-radius:6px;font-size:1rem;cursor:pointer;width:100%;transition:background-color 0.3s ease;animation:fadeInScale 1s ease-in-out}button:hover{background-color:#e67e22}.stop-button{background-color:#dc3545;margin-top:10px;animation:pulse 1.5s infinite alternate}button.stop-button:hover{background-color:#c82333}.spam-section{margin-top:30px;text-align:left}.spam-status{font-weight:bold;color:#f39c12;margin-top:15px;transition:all 0.3s ease}.spam-status.active{color:#007bff;animation:pulse 2s infinite alternate ease-in-out}
+</style>
+</head>
+<body>
+<div class="container">
+<img src="https://iili.io/2z3Fsbs.png" alt="WebFuck Logo">
+<h1>Version 2.0.4</h1>
+<form id="webhookForm">
+<div class="form-group">
+<label for="webhookURL">Discord Webhook URL:</label>
+<input type="text" id="webhookURL" name="webhookURL" required>
+</div>
+<div class="form-group">
+<label for="username">Custom Username:</label>
+<input type="text" id="username" name="username" placeholder="Optional">
+</div>
+<div class="form-group">
+<label for="avatarURL">Custom Avatar URL:</label>
+<input type="text" id="avatarURL" name="avatarURL" placeholder="Optional">
+</div>
+<div class="form-group">
+<label for="message">Message:</label>
+<input type="text" id="message" name="message" required>
+</div>
+<div class="form-group">
+<button type="button" id="sendButton">Send Message</button>
+</div>
+</form>
+<div class="spam-section">
+<label for="spamMessage">Spam/Raid Message:</label>
+<input type="text" id="spamMessage" name="spamMessage" required>
+<label for="spamInterval">Spam Interval (ms):</label>
+<input type="number" id="spamInterval" name="spamInterval" value="1000" required>
+<button type="button" id="spamButton">Start Spam/Raid</button>
+<button type="button" id="stopSpamButton" class="stop-button" disabled>Stop Spam</button>
+<p class="spam-status" id="spamStatus">Spam Status: Inactive</p>
+</div>
+</div>
+<script>
+const webhookURLInput=document.getElementById("webhookURL"),usernameInput=document.getElementById("username"),avatarURLInput=document.getElementById("avatarURL"),messageInput=document.getElementById("message"),sendButton=document.getElementById("sendButton"),spamMessageInput=document.getElementById("spamMessage"),spamIntervalInput=document.getElementById("spamInterval"),spamButton=document.getElementById("spamButton"),stopSpamButton=document.getElementById("stopSpamButton"),spamStatus=document.getElementById("spamStatus");let spamInterval=null;sendButton.addEventListener("click",()=>{const webhookURL=webhookURLInput.value,message=messageInput.value,username=usernameInput.value,avatarURL=avatarURLInput.value;if(!webhookURL||!message){alert("Please fill in the required fields.");return}const payload={content:message};if(username)payload.username=username;if(avatarURL)payload.avatar_url=avatarURL;fetch(webhookURL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}).then(response=>{if(response.ok){alert("Message sent successfully!")}else{alert("Failed to send message. Check your webhook URL and try again.")}}).catch(error=>{console.error("Error sending message:",error);alert("An error occurred. Please try again later.")})});spamButton.addEventListener("click",()=>{const webhookURL=webhookURLInput.value,spamMessage=spamMessageInput.value,interval=parseInt(spamIntervalInput.value),username=usernameInput.value,avatarURL=avatarURLInput.value;if(!webhookURL||!spamMessage||isNaN(interval)){alert("Please fill in all required fields and enter a valid spam interval.");return}spamInterval=setInterval(()=>{const payload={content:spamMessage};if(username)payload.username=username;if(avatarURL)payload.avatar_url=avatarURL;fetch(webhookURL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}).catch(error=>{console.error("Error sending spam message:",error)})},interval);spamStatus.textContent="Spam Status: Active";spamStatus.classList.add("active");stopSpamButton.disabled=false});stopSpamButton.addEventListener("click",()=>{clearInterval(spamInterval);spamInterval=null;spamStatus.textContent="Spam Status: Inactive";spamStatus.classList.remove("active");stopSpamButton.disabled=true});document.addEventListener("keydown",(event)=>{if(event.key==="Escape"&&spamInterval!==null){clearInterval(spamInterval);spamInterval=null;spamStatus.textContent="Spam Status: Inactive";spamStatus.classList.remove("active");event.preventDefault()}});document.addEventListener("mousedown",(event)=>{if(event.button===2&&spamInterval!==null){clearInterval(spamInterval);spamInterval=null;spamStatus.textContent="Spam Status: Inactive";spamStatus.classList.remove("active");event.preventDefault()}});</script>
+</body>
+</html>
